@@ -1,5 +1,13 @@
 import java.util.*;
 
+/**
+ * LVL 1 - enter non keyword to save task without tag
+ * LVL 2 - list: List all available tasks
+ * LVL 3 - done <task id>: Mark task as complete
+ * LVL 4 - deadline <task name> /by <date time>, mark task with [D]
+ * LVL 4 - todo <task name>, marks task with [T]
+ * LVL 4 - event <event name> /at <date time>, mark task with [E]
+ */
 public class Duke {
     public static final String dashLine = "    ____________________________________________________________\n";
 
@@ -12,7 +20,7 @@ public class Duke {
         System.out.println(dashLine);
         for (int i = 1; i <= count; i++) {
             Task currTask = lookup.get(i);
-            System.out.println("\t" + i + ". " + currTask.status() + currTask.str);
+            System.out.println("\t" + i + ". " + currTask.status());
         }
         System.out.println(dashLine);
     }
@@ -21,7 +29,14 @@ public class Duke {
         Task doneTask = lookup.get(id);
         doneTask.markDone();
         System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
-        System.out.println("\t" + doneTask.status() + doneTask.str + "\n" + dashLine);
+        System.out.println("\t" + doneTask.status() + dashLine);
+    }
+
+    public static void storeDeadline(Hashtable<Integer, Task> lookup, int id,) {
+        Task doneTask = lookup.get(id);
+        doneTask.markDone();
+        System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
+        System.out.println("\t" + doneTask.status() + dashLine);
     }
 
     /** main. */
@@ -35,11 +50,12 @@ public class Duke {
             if (newTask.str.equals("bye")) {
                 break;
             }
+            String keywords[] = newTask.str.split(" ");
             if (newTask.str.equals("list")) {
                 list(lookup, count);
             }
-            else if (newTask.str.split(" ")[0].equals("done")) {
-                id = Integer.parseInt(newTask.str.split(" ")[1]);
+            else if (keywords[0].equals("done")) {
+                id = Integer.parseInt(keywords[1]);
                 markTaskDone(lookup, id);
             } else {
                 store(lookup, ++count, newTask);
@@ -47,5 +63,6 @@ public class Duke {
         }
         System.out.println(dashLine + "\tBye. Hope to see you again soon!\n" + dashLine);
         input.close();
+
     }
 }
