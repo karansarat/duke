@@ -9,30 +9,24 @@ import java.util.*;
  * LVL 4 - event <event name> /at <date time>, mark task with [E]
  */
 public class Duke {
-    public static final String dashLine = "    ____________________________________________________________\n";
+    public static final String dashLine = "\t____________________________________________________________\n";
 
     public static void store(Hashtable lookup, int count, Task task) {
         lookup.put(count, task);
-        System.out.println(dashLine + "\tadded: " + task.str + "\n" + dashLine);
+        System.out.println(dashLine + "\tGot it. I've added this task:\n\t\t" + task.status()
+                + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
     }
 
     public static void list(Hashtable<Integer, Task> lookup, int count) {
-        System.out.println(dashLine);
+        System.out.println(dashLine + "\tHere are the tasks in your list:\n");
         for (int i = 1; i <= count; i++) {
             Task currTask = lookup.get(i);
-            System.out.println("\t" + i + ". " + currTask.status());
+            System.out.println("\t" + i + ". " + currTask.status() + "\n");
         }
         System.out.println(dashLine);
     }
 
     public static void markTaskDone(Hashtable<Integer, Task> lookup, int id) {
-        Task doneTask = lookup.get(id);
-        doneTask.markDone();
-        System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
-        System.out.println("\t" + doneTask.status() + dashLine);
-    }
-
-    public static void storeDeadline(Hashtable<Integer, Task> lookup, int id,) {
         Task doneTask = lookup.get(id);
         doneTask.markDone();
         System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
@@ -46,18 +40,30 @@ public class Duke {
         Hashtable<Integer, Task> lookup = new Hashtable<Integer, Task>();
         int count = 0, id = 0;
         while (true) {
-            Task newTask = new Task(input.nextLine());
-            if (newTask.str.equals("bye")) {
+            String instr = input.nextLine();
+            if (instr.equals("bye")) {
                 break;
             }
-            String keywords[] = newTask.str.split(" ");
-            if (newTask.str.equals("list")) {
+            String[] keywords = instr.split(" ");
+            if (instr.equals("list")) {
                 list(lookup, count);
+                continue;
             }
             else if (keywords[0].equals("done")) {
                 id = Integer.parseInt(keywords[1]);
                 markTaskDone(lookup, id);
+                continue;
+            } else if (keywords[0].equals("deadline")){
+                Deadline newTask = new Deadline(instr);
+                store(lookup, ++count, newTask);
+            } else if (keywords[0].equals("event")) {
+                Event newTask = new Event(instr);
+                store(lookup, ++count, newTask);
+            } else if (keywords[0].equals("todo")) {
+                Todo newTask = new Todo(instr);
+                store(lookup, ++count, newTask);
             } else {
+                Task newTask = new Task(instr);
                 store(lookup, ++count, newTask);
             }
         }
