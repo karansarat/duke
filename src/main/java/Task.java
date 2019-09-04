@@ -21,7 +21,7 @@ public class Task {
             if (arr[i].equals(key)) return i;
         }
         this.isValid = false; // check if correct keyword /by or /at was used
-        return -1;
+        throw new IllegalAccessError();
     }
 
     public void extractDate(String description, String key) {
@@ -31,7 +31,7 @@ public class Task {
         this.str = String.join(" ", temp1);
         String[] temp2 = Arrays.copyOfRange(instr, id + 1, instr.length);
         this.datetime = String.join(" ", temp2);
-        if (this.str.length() == 1 || this.datetime.length() == 1) throw new IllegalArgumentException();
+        if (this.str.length() <= 1 || this.datetime.length() <= 1) throw new IllegalArgumentException();
     }
 
     public void markDone() {
@@ -48,6 +48,10 @@ class Deadline extends Task {
             extractDate(description, "/by");
         } catch (IllegalArgumentException e) {
             System.out.println(dashLine + "\t☹ OOPS!!! The arguments for deadline are invalid.\n" +
+                    "\tdeadline <task name> /by <date time>\n" + dashLine);
+            this.isValid = false;
+        } catch (IllegalAccessError e) {
+            System.out.println(dashLine + "\t☹ OOPS!!! You used the wrong separator between task name and datetime. Use /by.\n" +
                     "\tdeadline <task name> /by <date time>\n" + dashLine);
             this.isValid = false;
         }
@@ -81,6 +85,14 @@ class Todo extends Task {
     public Todo(String description) {
         super(description);
         this.str =  this.str.replaceFirst("todo ", "");
+        try {
+            if (this.str.isEmpty() || this.str.equals("todo")
+                    || this.str.trim().isEmpty()) throw new IllegalArgumentException();
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(dashLine + "\t☹ OOPS!!! The description of a todo cannot be empty.\n" + dashLine);
+            this.isValid = false;
+        }
     }
 
     public String status() {
