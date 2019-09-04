@@ -7,6 +7,7 @@ import java.util.*;
  * LVL 4 - deadline <task name> /by <date time>, mark task with [D]
  * LVL 4 - todo <task name>, marks task with [T]
  * LVL 4 - event <event name> /at <date time>, mark task with [E]
+ * LVL 5 - Validation of User Input
  */
 public class Duke {
     public static final String dashLine = "\t____________________________________________________________\n";
@@ -55,16 +56,15 @@ public class Duke {
                 continue;
             } else if (keywords[0].equals("deadline")){
                 Deadline newTask = new Deadline(instr);
-                store(lookup, ++count, newTask);
+                if (newTask.isValid) store(lookup, ++count, newTask);
             } else if (keywords[0].equals("event")) {
                 Event newTask = new Event(instr);
-                store(lookup, ++count, newTask);
+                if (newTask.isValid) store(lookup, ++count, newTask);
             } else if (keywords[0].equals("todo")) {
                 Todo newTask = new Todo(instr);
-                store(lookup, ++count, newTask);
+                if (newTask.isValid) store(lookup, ++count, newTask);
             } else {
-                Task newTask = new Task(instr);
-                store(lookup, ++count, newTask);
+                System.out.println(dashLine + "\t☹ OOPS!!! I'm sorry, but I don't know what that means :-(\n" + dashLine);
             }
         }
         System.out.println(dashLine + "\tBye. Hope to see you again soon!\n" + dashLine);
