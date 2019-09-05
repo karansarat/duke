@@ -4,7 +4,7 @@ import java.lang.*;
 
 public class Task {
     public static final String dashLine = "\t____________________________________________________________\n";
-    protected String str, label;
+    protected String str;
     protected Date datetime;
     protected boolean isDone, isValid;
 
