@@ -1,51 +1,100 @@
+import java.io.IOException;
 import java.util.*;
 
+/**
+ * LVL 1 - enter non keyword to save task without tag
+ * LVL 2 - list: List all available tasks
+ * LVL 3 - done <task id>: Mark task as complete
+ * LVL 4 - deadline <task name> /by <date time>, mark task with [D]
+ * LVL 4 - todo <task name>, marks task with [T]
+ * LVL 4 - event <event name> /at <date time>, mark task with [E]
+ * LVL 5 - Validation of User Input
+ */
 public class Duke {
-    public static final String dashLine = "    ____________________________________________________________\n";
+    public static Hashtable<Integer, Task> lookup;
+    public static Search google;
+    public static final String dashLine = "\t____________________________________________________________\n";
 
-    public static void store(Hashtable lookup, int count, Task task) {
-        lookup.put(count, task);
-        System.out.println(dashLine + "\tadded: " + task.str + "\n" + dashLine);
+    public static void search(String substr) {
+        int i = 0;
+
+
+        try {
+            google = new Search(lookup, substr);
+        }
+        catch (NoSuchElementException e) {
+            System.out.println(dashLine + "\tSorry, no matches for '" + substr + "' found.\n" + dashLine);
+            return;
+        }
+        System.out.println(dashLine + "\tHere are the matching tasks in your list:\n");
+        while (google.matches.hasNext()) {
+            System.out.println("\t" + ++i + ". " + lookup.get(google.matches.next()).status() + "\n" + dashLine);
+        }
     }
 
-    public static void list(Hashtable<Integer, Task> lookup, int count) {
-        System.out.println(dashLine);
+    public static void store(int count, Task task) throws IOException {
+        lookup.put(count, task);
+        System.out.println(dashLine + "\tGot it. I've added this task:\n\t\t" + task.status()
+                + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
+        Writer saveData = new Writer(System.getProperty("user.dir") + "/log/duke.txt", true);
+        saveData.write(task.status());
+    }
+
+    public static void list(int count) {
+        System.out.println(dashLine + "\tHere are the tasks in your list:\n");
         for (int i = 1; i <= count; i++) {
             Task currTask = lookup.get(i);
-            System.out.println("\t" + i + ". " + currTask.status() + currTask.str);
+            System.out.println("\t" + i + ". " + currTask.status() + "\n");
         }
         System.out.println(dashLine);
     }
 
-    public static void markTaskDone(Hashtable<Integer, Task> lookup, int id) {
+    public static void markTaskDone(int id) throws IOException {
         Task doneTask = lookup.get(id);
         doneTask.markDone();
+        store(id, doneTask);
         System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
-        System.out.println("\t" + doneTask.status() + doneTask.str + "\n" + dashLine);
+        System.out.println("\t" + doneTask.status() + "\n" + dashLine);
     }
 
     /** main. */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Writer init = new Writer(System.getProperty("user.dir") + "/log/duke.txt", false);
         System.out.println(dashLine + "\tHello! I'm Duke\n\tWhat can I do for you?\n" + dashLine);
         Scanner input = new Scanner(System.in); // new input object
-        Hashtable<Integer, Task> lookup = new Hashtable<Integer, Task>();
+        lookup = new Hashtable<Integer, Task>();
         int count = 0, id = 0;
         while (true) {
-            Task newTask = new Task(input.nextLine());
-            if (newTask.str.equals("bye")) {
+            String instr = input.nextLine();
+            if (instr.equals("bye")) {
                 break;
             }
-            if (newTask.str.equals("list")) {
-                list(lookup, count);
+            String[] keywords = instr.split(" ");
+            if (instr.equals("list")) {
+                list(count);
+                continue;
             }
-            else if (newTask.str.split(" ")[0].equals("done")) {
-                id = Integer.parseInt(newTask.str.split(" ")[1]);
-                markTaskDone(lookup, id);
+            else if (keywords[0].equals("done")) {
+                id = Integer.parseInt(keywords[1]);
+                markTaskDone(id);
+                continue;
+            } else if (keywords[0].equals("deadline")){
+                Deadline newTask = new Deadline(instr);
+                if (newTask.isValid) store(++count, newTask);
+            } else if (keywords[0].equals("event")) {
+                Event newTask = new Event(instr);
+                if (newTask.isValid) store(++count, newTask);
+            } else if (keywords[0].equals("todo")) {
+                Todo newTask = new Todo(instr);
+                if (newTask.isValid) store(++count, newTask);
+            } else if (keywords[0].equals("find")) {
+                search(instr.replaceFirst("find ", ""));
             } else {
-                store(lookup, ++count, newTask);
+                System.out.println(dashLine + "\t☹ OOPS!!! I'm sorry, but I don't know what that means :-(\n" + dashLine);
             }
         }
         System.out.println(dashLine + "\tBye. Hope to see you again soon!\n" + dashLine);
         input.close();
+
     }
 }
