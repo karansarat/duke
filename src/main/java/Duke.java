@@ -40,6 +40,13 @@ public class Duke {
         saveData.write(task.status());
     }
 
+
+    public static void delete(Hashtable<Integer, Task> lookup, int count) {
+        System.out.println(dashLine + "\tNoted. I've removed this task:\n\t\t" + (lookup.get(count)).status()
+                + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
+        lookup.remove(count);
+    }
+    // Error check list when empty list
     public static void list(int count) {
         System.out.println(dashLine + "\tHere are the tasks in your list:\n");
         for (int i = 1; i <= count; i++) {
@@ -86,6 +93,9 @@ public class Duke {
                 if (newTask.isValid) store(++count, newTask);
             } else if (keywords[0].equals("todo")) {
                 Todo newTask = new Todo(instr);
+                if (newTask.isValid) store(lookup, ++count, newTask);
+            } else if (keywords[0].equals("delete")) {
+                delete(lookup, Integer.parseInt(keywords[1]));
                 if (newTask.isValid) store(++count, newTask);
             } else if (keywords[0].equals("find")) {
                 search(instr.replaceFirst("find ", ""));
