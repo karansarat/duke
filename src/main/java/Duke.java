@@ -13,7 +13,7 @@ import java.util.*;
 public class Duke {
     public static final String dashLine = "\t____________________________________________________________\n";
 
-    public static void store(Hashtable lookup, int count, Task task) throws IOException {
+    public static void store(Hashtable<Integer, Task> lookup, int count, Task task) throws IOException {
         lookup.put(count, task);
         System.out.println(dashLine + "\tGot it. I've added this task:\n\t\t" + task.status()
                 + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
@@ -21,6 +21,12 @@ public class Duke {
         saveData.write(task.status());
     }
 
+    public static void delete(Hashtable<Integer, Task> lookup, int count) {
+        System.out.println(dashLine + "\tNoted. I've removed this task:\n\t\t" + (lookup.get(count)).status()
+                + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
+        lookup.remove(count);
+    }
+    // Error check list when empty list
     public static void list(Hashtable<Integer, Task> lookup, int count) {
         System.out.println(dashLine + "\tHere are the tasks in your list:\n");
         for (int i = 1; i <= count; i++) {
@@ -68,6 +74,8 @@ public class Duke {
             } else if (keywords[0].equals("todo")) {
                 Todo newTask = new Todo(instr);
                 if (newTask.isValid) store(lookup, ++count, newTask);
+            } else if (keywords[0].equals("delete")) {
+                delete(lookup, Integer.parseInt(keywords[1]));
             } else {
                 System.out.println(dashLine + "\t☹ OOPS!!! I'm sorry, but I don't know what that means :-(\n" + dashLine);
             }
