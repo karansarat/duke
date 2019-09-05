@@ -1,4 +1,0 @@
-[D][✘] test (by: 2pm)
-[E][✘] test (at: 2pm)
-[T][✘] test
-[T][✓] test
