@@ -9,6 +9,10 @@ import java.util.*;
  * LVL 4 - todo <task name>, marks task with [T]
  * LVL 4 - event <event name> /at <date time>, mark task with [E]
  * LVL 5 - Validation of User Input
+ * LVL 6 - Delete <id>
+ * LVL 7 - Saves task list to file
+ * LVL 8 - Date and Time is now recognised
+ * LVL 9 - find <id> searches for matches for string in task names
  */
 public class Duke {
     public static Hashtable<Integer, Task> lookup;
@@ -41,10 +45,10 @@ public class Duke {
     }
 
 
-    public static void delete(Hashtable<Integer, Task> lookup, int count) {
-        System.out.println(dashLine + "\tNoted. I've removed this task:\n\t\t" + (lookup.get(count)).status()
+    public static void delete(int id, int count) {
+        System.out.println(dashLine + "\tNoted. I've removed this task:\n\t\t" + (lookup.get(id)).status()
                 + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
-        lookup.remove(count);
+        lookup.remove(id);
     }
     // Error check list when empty list
     public static void list(int count) {
@@ -79,12 +83,10 @@ public class Duke {
             String[] keywords = instr.split(" ");
             if (instr.equals("list")) {
                 list(count);
-                continue;
             }
             else if (keywords[0].equals("done")) {
                 id = Integer.parseInt(keywords[1]);
                 markTaskDone(id);
-                continue;
             } else if (keywords[0].equals("deadline")){
                 Deadline newTask = new Deadline(instr);
                 if (newTask.isValid) store(++count, newTask);
@@ -93,10 +95,9 @@ public class Duke {
                 if (newTask.isValid) store(++count, newTask);
             } else if (keywords[0].equals("todo")) {
                 Todo newTask = new Todo(instr);
-                if (newTask.isValid) store(lookup, ++count, newTask);
-            } else if (keywords[0].equals("delete")) {
-                delete(lookup, Integer.parseInt(keywords[1]));
                 if (newTask.isValid) store(++count, newTask);
+            } else if (keywords[0].equals("delete")) { //Error check delete out of bounds
+                delete(Integer.parseInt(keywords[1]), --count);
             } else if (keywords[0].equals("find")) {
                 search(instr.replaceFirst("find ", ""));
             } else {
