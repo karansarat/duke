@@ -1,4 +1,5 @@
 import java.util.*;
+import java.lang.*;
 
 public class Task {
     public static final String dashLine = "\t____________________________________________________________\n";
@@ -12,8 +13,7 @@ public class Task {
     }
 
     public String status() {
-        //return (isDone ? "[\u2714] " : "[\u2718] "); //return tick or X symbols + taskname
-        return (isDone ? "[tick] " : "[\u2718] ") + this.str; //return tick or X symbols + taskname
+        return (isDone ? "[\u2713] " : "[\u2718] ") + this.str; //return tick or X symbols + taskname
     }
 
     public int searchForKey(String[] arr, String key) {

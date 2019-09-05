@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -12,10 +13,12 @@ import java.util.*;
 public class Duke {
     public static final String dashLine = "\t____________________________________________________________\n";
 
-    public static void store(Hashtable lookup, int count, Task task) {
+    public static void store(Hashtable lookup, int count, Task task) throws IOException {
         lookup.put(count, task);
         System.out.println(dashLine + "\tGot it. I've added this task:\n\t\t" + task.status()
                 + "\n\tNow you have " + count +  " task(s) in the list.\n" + dashLine);
+        Writer saveData = new Writer(System.getProperty("user.dir") + "/log/duke.txt", true);
+        saveData.write(task.status());
     }
 
     public static void list(Hashtable<Integer, Task> lookup, int count) {
@@ -27,15 +30,17 @@ public class Duke {
         System.out.println(dashLine);
     }
 
-    public static void markTaskDone(Hashtable<Integer, Task> lookup, int id) {
+    public static void markTaskDone(Hashtable<Integer, Task> lookup, int id) throws IOException {
         Task doneTask = lookup.get(id);
         doneTask.markDone();
+        store(lookup, id, doneTask);
         System.out.println(dashLine + "\tNice! I've marked this task as done:\n");
-        System.out.println("\t" + doneTask.status() + dashLine);
+        System.out.println("\t" + doneTask.status() + "\n" + dashLine);
     }
 
     /** main. */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Writer init = new Writer(System.getProperty("user.dir") + "/log/duke.txt", false);
         System.out.println(dashLine + "\tHello! I'm Duke\n\tWhat can I do for you?\n" + dashLine);
         Scanner input = new Scanner(System.in); // new input object
         Hashtable<Integer, Task> lookup = new Hashtable<Integer, Task>();
